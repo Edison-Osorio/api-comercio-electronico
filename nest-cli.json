@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/ecommerce-monorepo/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/ecommerce-monorepo/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/ecommerce-monorepo",
+  "projects": {
+    "ecommerce-monorepo": {
+      "type": "application",
+      "root": "apps/ecommerce-monorepo",
+      "entryFile": "main",
+      "sourceRoot": "apps/ecommerce-monorepo/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ecommerce-monorepo/tsconfig.app.json"
+      }
+    },
+    "payments": {
+      "type": "application",
+      "root": "apps/payments",
+      "entryFile": "main",
+      "sourceRoot": "apps/payments/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/payments/tsconfig.app.json"
+      }
+    },
+    "user-management": {
+      "type": "application",
+      "root": "apps/user-management",
+      "entryFile": "main",
+      "sourceRoot": "apps/user-management/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/user-management/tsconfig.app.json"
+      }
+    }
+  }
+}
