@@ -3,7 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
 
 // Definición del token de inyección (debe coincidir con el módulo)
-export const PAYMENT_SERVICE = 'PAYMENT_SERVICE';
+export const PAYMENT_SERVICE = 'USER-MANAGEMENT';
 
 // DTO simulado para la creación de usuarios
 interface CreateUserDto {
@@ -16,7 +16,7 @@ export class UserManagementService {
   private readonly logger = new Logger(UserManagementService.name);
 
   // Inyectamos el cliente TCP que se conecta al servicio de Pagos
-  constructor(@Inject(PAYMENT_SERVICE) private readonly client: ClientProxy) { }
+  constructor(@Inject(PAYMENT_SERVICE) private readonly client: ClientProxy) {}
 
   async createUser(data: CreateUserDto) {
     // 1. Lógica de negocio: Guardar el usuario en la DB (simulado)
@@ -34,7 +34,9 @@ export class UserManagementService {
       traceId: traceId, // El traceId es crucial para seguir el evento en Pagos
     };
 
-    this.logger.log(`[Users SVC] Publicando evento 'user.created' con Trace ID: ${traceId}`);
+    this.logger.log(
+      `[Users SVC] Publicando evento 'user.created' con Trace ID: ${traceId}`,
+    );
 
     // El método 'emit' envía el mensaje y NO espera respuesta (asíncrono)
     // El 'await' solo espera que el mensaje se ponga en cola de envío.
@@ -44,7 +46,8 @@ export class UserManagementService {
 
     return {
       userId: userId,
-      status: 'User created and event published (Asynchronous processing started).',
+      status:
+        'User created and event published (Asynchronous processing started).',
       traceId: traceId,
       paymentServiceResponse: 'Pending (Asynchronous)',
     };

@@ -7,11 +7,10 @@ async function bootstrap() {
     transport: Transport.TCP,
     options: {
       host: '0.0.0.0',
-      port: 4000, // CRÍTICO: Debe coincidir con el puerto del cliente en User Management
+      port: 4000,
     },
   };
 
-  // Importante: Usar createMicroservice para que escuche mensajes TCP
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     PaymentsModule,
     tcpConfig,
