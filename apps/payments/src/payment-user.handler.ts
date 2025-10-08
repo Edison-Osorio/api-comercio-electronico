@@ -2,7 +2,6 @@ import { Controller, Logger } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { CircuitBreakerUtility } from './resilience/circuit-breaker.utility';
 
-// Contrato de evento (debe coincidir con el productor)
 interface UserPayloadV1 {
   id: string;
   email: string;
@@ -13,17 +12,10 @@ interface UserPayloadV1 {
 @Controller()
 export class PaymentUserHandler {
   private readonly globalLogger = new Logger(PaymentUserHandler.name);
-  // Contador para forzar fallos en la demo
   private simulationFailureCounter = 0;
 
-  // Inyectar el CircuitBreakerUtility
-  constructor(
-    private readonly circuitBreaker: CircuitBreakerUtility<string>,
-  ) {
-    // Definir la función que el Circuit Breaker debe proteger (llamada síncrona simulada)
-    this.circuitBreaker.setProtectedFunction(() =>
-      this.checkInventorySync(),
-    );
+  constructor(private readonly circuitBreaker: CircuitBreakerUtility<string>) {
+    this.circuitBreaker.setProtectedFunction(() => this.checkInventorySync());
   }
 
   /**
@@ -31,7 +23,6 @@ export class PaymentUserHandler {
    */
   @MessagePattern({ cmd: 'user.created' })
   async handleUserCreated(@Payload() data: UserPayloadV1): Promise<string> {
-    // Creamos un Logger con el Trace ID para fines de observabilidad (Gobernanza)
     const contextLogger = new Logger(`Payments [Trace:${data.traceId}]`);
 
     contextLogger.log(`\n<<< [PAYMENTS SVC] Mensaje Recibido (TCP) >>>`);
@@ -53,7 +44,9 @@ export class PaymentUserHandler {
 
       // La llamada protegida: si falla 3 veces, entra en modo OPEN.
       const inventoryStatus = await this.circuitBreaker.execute();
-      contextLogger.log(`[Payments] Respuesta de Inventario: ${inventoryStatus}`);
+      contextLogger.log(
+        `[Payments] Respuesta de Inventario: ${inventoryStatus}`,
+      );
 
       // Si todo sale bien
       await this.paymentsDatabaseUpdate(data);
@@ -80,7 +73,7 @@ export class PaymentUserHandler {
         return `Usuario ${data.id} pendiente. Falla síncrona registrada por CB.`;
       }
 
-      // 3. Fallo CRÍTICO NO CONTROLADO 
+      // 3. Fallo CRÍTICO NO CONTROLADO
       contextLogger.error(
         `[Payments] Fallo CRÍTICO y no controlado: ${error.message}`,
       );
@@ -107,7 +100,13 @@ export class PaymentUserHandler {
     return 'INVENTORY_CHECK_OK';
   }
 
-  private async checkIfProcessed(traceId: string): Promise<boolean> { return false; }
-  private async markAsProcessed(traceId: string): Promise<void> { return; }
-  private async paymentsDatabaseUpdate(data: UserPayloadV1): Promise<void> { return; }
+  private async checkIfProcessed(traceId: string): Promise<boolean> {
+    return false;
+  }
+  private async markAsProcessed(traceId: string): Promise<void> {
+    return;
+  }
+  private async paymentsDatabaseUpdate(data: UserPayloadV1): Promise<void> {
+    return;
+  }
 }

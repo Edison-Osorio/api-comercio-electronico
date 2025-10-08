@@ -6,16 +6,13 @@ interface CreateUserDto {
   firstName: string;
 }
 
-@Controller('users') // Endpoint: /api/v1/users
+@Controller('users')
 export class UserManagementController {
-  constructor(private readonly userManagementService: UserManagementService) { }
+  constructor(private readonly userManagementService: UserManagementService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async createUser(@Body() createUserDto: CreateUserDto) {
-    // La lógica del servicio maneja la emisión del mensaje TCP
-    return this.userManagementService.createUser(
-      createUserDto);
+    return this.userManagementService.createUser(createUserDto);
   }
 }
-

@@ -9,7 +9,7 @@ export class PedidosService {
     @Inject('USER-MANAGEMENT') private readonly client: ClientProxy,
   ) {}
 
-  async crearPedido(data: PedidoDto) {
+  crearPedido(data: PedidoDto) {
     const uuidPedido = uuidv4();
 
     console.log(`Se registro su pedidodo con codigo ${uuidPedido} `);
@@ -22,7 +22,7 @@ export class PedidosService {
       uuidCliente: data.uuidCliente,
     };
 
-    await this.client.emit({ cmd: 'pedidoCreado' }, pedido).toPromise();
+    this.client.emit({ cmd: 'pedidoCreado' }, pedido).toPromise();
     console.log(`Evento pedidoCreado fue publicado en el broker TCP`);
   }
 }
