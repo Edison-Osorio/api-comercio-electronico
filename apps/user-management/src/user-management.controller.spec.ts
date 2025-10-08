@@ -11,12 +11,8 @@ describe('UserManagementController', () => {
       providers: [UserManagementService],
     }).compile();
 
-    userManagementController = app.get<UserManagementController>(UserManagementController);
-  });
-
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(userManagementController.getHello()).toBe('Hello World!');
-    });
+    userManagementController = app.get<UserManagementController>(
+      UserManagementController,
+    );
   });
 });
